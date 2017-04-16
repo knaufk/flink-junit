@@ -2,7 +2,7 @@
 
 #### Build 
 
-1. `gradle wrapper --gradle-version 3.3`
+1. `gradle wrapper --gradle-version 3.1`
 2. `./gradlew build`
 
 #### Usage
