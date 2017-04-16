@@ -36,10 +36,6 @@ spotless {
     }
 }
 
-findbugs {
-    excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
-}
-
 tasks.withType(FindBugs) {
     reports {
         xml.enabled false
