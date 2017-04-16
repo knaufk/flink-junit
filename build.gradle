@@ -1,0 +1,48 @@
+group 'com.github.knaufk'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath('com.diffplug.gradle.spotless:spotless:2.4.1')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'findbugs'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'junit:junit:4.12'
+    compile 'org.apache.flink:flink-test-utils_2.11:1.2.0'
+    compile 'org.apache.flink:flink-runtime-web_2.11:1.2.0'
+
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
+findbugs {
+    excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
