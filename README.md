@@ -1,4 +1,6 @@
-### JUnit Rule for Apache Flink (1.2.0)
+[![Build Status](https://travis-ci.org/knaufk/flink-junit.svg?branch=master)](https://travis-ci.org/knaufk/flink-junit)
+
+## JUnit Rule for Apache Flink (1.2.0)
 
 #### Build 
 
