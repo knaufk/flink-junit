@@ -1,14 +1,10 @@
 package com.github.knaufk.flinkjunit;
 
-import org.apache.curator.test.TestingServer;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.HighAvailabilityOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.ServerSocket;
 
 public final class FlinkJUnitRuleBuilder {
 
@@ -24,9 +20,9 @@ public final class FlinkJUnitRuleBuilder {
   private int noOfTaskmanagers = DEFAULT_NUMBER_OF_TASKMANAGERS;
   private int noOfTaskSlots = DEFAULT_NUMBER_OF_TASK_SLOTS;
 
-  private int webUiPort = availablePort();
+  private int webUiPort = 0;
   private boolean webUiEnabled = false;
-  private boolean zookeeper = false;
+  private boolean zookeeperHa = false;
 
   /**
    * Enables Flink WebUI and binds it to a random port available.
@@ -61,60 +57,40 @@ public final class FlinkJUnitRuleBuilder {
   }
 
   /**
-   * Enables JobManager High-Availability for the cluster started for this test. This will spin up a
-   * local Zookeeper instance for Leader Election.
+   * Enables JobManager high availability for the cluster started for this test. This will spin up a
+   * local Zookeeper instance for leader election.
    *
    * @return
    */
   public FlinkJUnitRuleBuilder withJobManagerHA() {
-    this.zookeeper = true;
+    this.zookeeperHa = true;
     return this;
   }
 
   public FlinkJUnitRule build() {
-    FlinkJUnitRule rule = new FlinkJUnitRule(createConfiguration());
-    return rule;
+    return new FlinkJUnitRule(buildConfiguration());
   }
 
-  private Configuration createConfiguration() {
+  private Configuration buildConfiguration() {
 
     Configuration config = new Configuration();
 
-    //Configuration by user
     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
     config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, noOfTaskSlots);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
     config.setInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, webUiPort);
 
-    //Defaults
     config.setLong(ConfigConstants.TASK_MANAGER_MEMORY_SIZE_KEY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
     config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
     config.setString(ConfigConstants.AKKA_ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
     config.setString(ConfigConstants.AKKA_STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
 
-    if (zookeeper) {
+    if (zookeeperHa) {
       config.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
       config.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
       config.setString(ConfigConstants.HA_ZOOKEEPER_STORAGE_PATH, "/tmp/flink");
     }
 
     return config;
-  }
-
-  /**
-   * Returns a random port, which is available when the method was called.
-   *
-   * @return random available port
-   */
-  private int availablePort() {
-    try (ServerSocket socket = new ServerSocket(0)) {
-      int port = socket.getLocalPort();
-      LOG.info("Setting WebUI port to random port. Port is {}.", port);
-      return port;
-    } catch (IOException e) {
-      String msg = "Exception while finding a random port for the Flink WebUi.";
-      LOG.error(msg);
-      throw new FlinkJUnitException(msg, e);
-    }
   }
 }

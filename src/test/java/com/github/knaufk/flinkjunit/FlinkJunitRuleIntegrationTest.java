@@ -4,15 +4,26 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.io.IOException;
 
 public class FlinkJunitRuleIntegrationTest {
 
   @Rule
   public FlinkJUnitRule flinkRule =
-      new FlinkJUnitRuleBuilder().withTaskmanagers(1).withTaskSlots(4).build();
+      new FlinkJUnitRuleBuilder()
+          .withTaskmanagers(1)
+          .withTaskSlots(4)
+          .withWebUiEnabled(9091)
+          .build();
+
+  @Test
+  public void testFlinkUiReachableUnderSpecifiedPort() throws IOException {
+
+    TestUtils.callWebUiOverview(9091);
+  }
 
   @Test
   public void testStreamEnv() throws Exception {

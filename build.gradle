@@ -29,6 +29,7 @@ dependencies {
     compile 'org.apache.flink:flink-test-utils_2.11:1.2.0'
     compile 'org.apache.flink:flink-runtime-web_2.11:1.2.0'
 
+    testCompile 'org.assertj:assertj-core:3.6.2'
 }
 
 spotless {

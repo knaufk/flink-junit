@@ -7,16 +7,28 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FlinkJUnitRuleBuilderIntegrationTest {
 
   @ClassRule
-  public static FlinkJUnitRule flinkRule =
+  public static final FlinkJUnitRule flinkRule =
       new FlinkJUnitRuleBuilder()
           .withTaskmanagers(1)
           .withTaskSlots(4)
           .withWebUiEnabled()
           .withJobManagerHA()
           .build();
+
+  @Test
+  public void testFlinkUiReachable() throws IOException {
+
+    String overview = TestUtils.callWebUiOverview(flinkRule.getFlinkUiPort());
+
+    assertThat(overview).contains("\"taskmanagers\":1,\"slots-total\":4");
+  }
 
   @Test
   public void testStreamEnv() throws Exception {

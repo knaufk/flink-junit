@@ -5,6 +5,7 @@ import akka.dispatch.Futures;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.apache.curator.test.TestingServer;
+import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.HighAvailabilityOptions;
 import org.apache.flink.runtime.messages.TaskManagerMessages;
@@ -23,6 +24,7 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,11 @@ public class FlinkJUnitRule extends ExternalResource {
 
   private static final int DEFAULT_PARALLELISM = 4;
 
+  private Configuration configuration;
+  private LocalFlinkMiniCluster miniCluster;
+
+  private TestingServer localZk;
+
   /**
    * Creates a new <code>FlinkJUnitRule</code> . It will start up and tear down a local Flink
    * cluster in its <code>before</code> and <code>after</code> methods.
@@ -45,16 +52,25 @@ public class FlinkJUnitRule extends ExternalResource {
     this.configuration = configuration;
   }
 
-  private Configuration configuration;
-  private LocalFlinkMiniCluster miniCluster;
-
-  private TestingServer localZk;
+  /**
+   * Returns the port under which the Flink UI can be reached.
+   *
+   * @return the port or -1 if the Flink UI is not running.
+   */
+  public int getFlinkUiPort() {
+    return configuration.getInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, -1);
+  }
 
   @Override
   protected void before() throws Throwable {
-    if (zookeeperHAEnabled()) {
+    if (zookeeperHaEnabled()) {
       startLocalZookeeperAndUpdateConfig();
     }
+
+    if (webUiEnabled()) {
+      setPortForWebUiAndUpdateConfig();
+    }
+
     miniCluster = startCluster();
     setEnvContextToMiniCluster(miniCluster);
   }
@@ -63,13 +79,19 @@ public class FlinkJUnitRule extends ExternalResource {
   protected void after() {
     try {
       stopCluster(miniCluster, new FiniteDuration(1, TimeUnit.SECONDS));
-      if (zookeeperHAEnabled()) {
+      if (zookeeperHaEnabled()) {
         stopZookeeper(localZk);
       }
     } catch (Exception e) {
       throw new FlinkJUnitException("Exception while stopping local cluster.", e);
     } finally {
       TestStreamEnvironment.unsetAsContext();
+    }
+  }
+
+  private void setPortForWebUiAndUpdateConfig() {
+    if (configuration.getInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, -1) == 0) {
+      configuration.setInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, availablePort());
     }
   }
 
@@ -99,8 +121,12 @@ public class FlinkJUnitRule extends ExternalResource {
     localZk.stop();
   }
 
-  private boolean zookeeperHAEnabled() {
+  private boolean zookeeperHaEnabled() {
     return configuration.getString(HighAvailabilityOptions.HA_MODE).equals("zookeeper");
+  }
+
+  private boolean webUiEnabled() {
+    return configuration.getBoolean(ConfigConstants.LOCAL_START_WEBSERVER, false);
   }
 
   private void stopCluster(LocalFlinkMiniCluster executor, FiniteDuration timeout)
@@ -152,6 +178,23 @@ public class FlinkJUnitRule extends ExternalResource {
 
       Assert.assertEquals("Not all broadcast variables were released.", 0, numUnreleasedBCVars);
       Assert.assertEquals("Not all TCP connections were released.", 0, numActiveConnections);
+    }
+  }
+
+  /**
+   * Returns a random port, which is available when the method was called.
+   *
+   * @return random available port
+   */
+  private int availablePort() {
+    try (ServerSocket socket = new ServerSocket(0)) {
+      int port = socket.getLocalPort();
+      LOG.info("Setting WebUI port to random port. Port is {}.", port);
+      return port;
+    } catch (IOException e) {
+      String msg = "Exception while finding a random port for the Flink WebUi.";
+      LOG.error(msg);
+      throw new FlinkJUnitException(msg, e);
     }
   }
 

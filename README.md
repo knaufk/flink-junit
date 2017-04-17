@@ -65,15 +65,15 @@ There are reasonable defaults for all options. To get started, you can just use 
 For full configurability you can also pass the full Flink cluster configuration object to the constructor of the `FlinkJunitRule` directly. This option exists to give the application developer the full flexbility to adjust the cluster to the specific needs of the test.
 
  ```java
-    private static Configuration config = new Configuration();
+   private static Configuration config = new Configuration();
 
-    static {
-      config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, 2);
-      ...
-    }
+   static {
+     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, 2);
+     ...
+   }
 
-    @ClassRule
-    public static FlinkJUnitRule flinkRule = new FlinkJUnitRule(config);
+   @ClassRule
+   public static FlinkJUnitRule flinkRule = new FlinkJUnitRule(config);
  ```
   
 ##### @Rule vs @ClassRule
