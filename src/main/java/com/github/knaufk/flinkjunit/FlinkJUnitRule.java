@@ -5,7 +5,6 @@ import akka.dispatch.Futures;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.apache.curator.test.TestingServer;
-import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.HighAvailabilityOptions;
 import org.apache.flink.runtime.messages.TaskManagerMessages;
@@ -23,9 +22,12 @@ import scala.concurrent.ExecutionContext$;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static org.apache.flink.configuration.ConfigConstants.HA_ZOOKEEPER_QUORUM_KEY;
 
 public class FlinkJUnitRule extends ExternalResource {
 
@@ -33,33 +35,37 @@ public class FlinkJUnitRule extends ExternalResource {
 
   private static final int DEFAULT_PARALLELISM = 4;
 
-  private static final long TASK_MANAGER_MEMORY_SIZE = 80;
-  private static final long DEFAULT_AKKA_ASK_TIMEOUT = 1000;
-  private static final String DEFAULT_AKKA_STARTUP_TIMEOUT = "60 s";
+  /**
+   * Creates a new <code>FlinkJUnitRule</code> . It will start up and tear down a local Flink
+   * cluster in its <code>before</code> and <code>after</code> methods.
+   *
+   * @param configuration the configuration of the cluster
+   */
+  public FlinkJUnitRule(Configuration configuration) {
+    this.configuration = configuration;
+  }
 
-  private int noOfTaskmanagers;
-  private int noOfTaskSlots;
-  private boolean webUiEnabled;
-  private int webUiPort;
-
+  private Configuration configuration;
   private LocalFlinkMiniCluster miniCluster;
-  private boolean zookeeper;
 
-  FlinkJUnitRule() {}
+  private TestingServer localZk;
 
   @Override
   protected void before() throws Throwable {
-    miniCluster = startCluster(createConfiguration(), false);
-
-    TestStreamEnvironment.setAsContext(miniCluster, DEFAULT_PARALLELISM);
-    TestEnvironment testEnvironment = new TestEnvironment(miniCluster, DEFAULT_PARALLELISM);
-    testEnvironment.setAsContext();
+    if (zookeeperHAEnabled()) {
+      startLocalZookeeperAndUpdateConfig();
+    }
+    miniCluster = startCluster();
+    setEnvContextToMiniCluster(miniCluster);
   }
 
   @Override
   protected void after() {
     try {
       stopCluster(miniCluster, new FiniteDuration(1, TimeUnit.SECONDS));
+      if (zookeeperHAEnabled()) {
+        stopZookeeper(localZk);
+      }
     } catch (Exception e) {
       throw new FlinkJUnitException("Exception while stopping local cluster.", e);
     } finally {
@@ -67,42 +73,34 @@ public class FlinkJUnitRule extends ExternalResource {
     }
   }
 
-  private Configuration createConfiguration() throws Exception {
-
-    Configuration config = new Configuration();
-
-    //Configuration by user
-    config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
-    config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, noOfTaskSlots);
-    config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, webUiPort);
-
-    //Defaults
-    config.setLong(ConfigConstants.TASK_MANAGER_MEMORY_SIZE_KEY, TASK_MANAGER_MEMORY_SIZE);
-    config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
-    config.setString(ConfigConstants.AKKA_ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
-    config.setString(ConfigConstants.AKKA_STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
-
-    if (zookeeper) {
-      TestingServer zookeeperServer = new TestingServer();
-      config.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
-      config.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
-      config.setString(ConfigConstants.HA_ZOOKEEPER_STORAGE_PATH, "/tmp/flink");
-      config.setString(
-          ConfigConstants.HA_ZOOKEEPER_QUORUM_KEY, "localhost:" + zookeeperServer.getPort());
-    }
-
-    return config;
+  private LocalFlinkMiniCluster startCluster() {
+    LocalFlinkMiniCluster miniCluster = new LocalFlinkMiniCluster(configuration, false);
+    miniCluster.start();
+    return miniCluster;
   }
 
-  private LocalFlinkMiniCluster startCluster(Configuration config, boolean singleActorSystem)
-      throws Exception {
+  private void setEnvContextToMiniCluster(final LocalFlinkMiniCluster miniCluster) {
+    TestStreamEnvironment.setAsContext(miniCluster, DEFAULT_PARALLELISM);
+    TestEnvironment testEnvironment = new TestEnvironment(miniCluster, DEFAULT_PARALLELISM);
+    testEnvironment.setAsContext();
+  }
 
-    LocalFlinkMiniCluster cluster = new LocalFlinkMiniCluster(config, singleActorSystem);
+  private void startLocalZookeeperAndUpdateConfig() throws Exception {
+    LOG.info("Zookeeper is choosen for HA. Starting local Zookeeper...");
+    localZk = new TestingServer();
+    int zkPort = localZk.getPort();
+    configuration.setString(HA_ZOOKEEPER_QUORUM_KEY, "localhost:" + zkPort);
+    localZk.start();
+    LOG.debug("Zookeeper started on port {}", zkPort);
+  }
 
-    cluster.start();
+  private void stopZookeeper(final TestingServer localZk) throws IOException {
+    LOG.info("Stopping local zookeeper...");
+    localZk.stop();
+  }
 
-    return cluster;
+  private boolean zookeeperHAEnabled() {
+    return configuration.getString(HighAvailabilityOptions.HA_MODE).equals("zookeeper");
   }
 
   private void stopCluster(LocalFlinkMiniCluster executor, FiniteDuration timeout)
@@ -159,25 +157,5 @@ public class FlinkJUnitRule extends ExternalResource {
 
   private ExecutionContext defaultExecutionContext() {
     return ExecutionContext$.MODULE$.global();
-  }
-
-  public void setNoOfTaskmanagers(final int noOfTaskmanagers) {
-    this.noOfTaskmanagers = noOfTaskmanagers;
-  }
-
-  public void setNoOfTaskSlots(final int noOfTaskSlots) {
-    this.noOfTaskSlots = noOfTaskSlots;
-  }
-
-  public void setWebUiEnabled(final boolean webUiEnabled) {
-    this.webUiEnabled = webUiEnabled;
-  }
-
-  public void setWebUiPort(final int webUiPort) {
-    this.webUiPort = webUiPort;
-  }
-
-  public void setZookeeper(final boolean zookeeper) {
-    this.zookeeper = zookeeper;
   }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="com.github.knaufk.flinkjunit.FlinkJunitDefaultsIntegrationTest" />
+        <And>
+            <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        </And>
+    </Match>
+    <Match>
+        <Class name="com.github.knaufk.flinkjunit.FlinkJunitRuleIntegrationTest" />
+        <And>
+            <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        </And>
+    </Match>
+</FindBugsFilter>
