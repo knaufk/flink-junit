@@ -20,7 +20,7 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 ### Usage
 
-There are two options to use this rule. 
+There are two ways to use this rule. 
 
 ##### Option 1: FlinkJunitRuleBuilder
 
@@ -78,4 +78,4 @@ For full configurability you can also pass the full Flink cluster configuration 
   
 ##### @Rule vs @ClassRule
 
-When using @ClassRule one Flink cluster will be used for all test methods. With @Rule a new Flink cluster will be started and torn down for each test. In most cases `@ClassRule` should work fine and saves time during test execution as opposed to `@Rule`
+When using `@ClassRule` one Flink cluster will be used for all test methods. With `@Rule` a new Flink cluster will be started and torn down for each test. In most cases `@ClassRule` should work fine and saves time during test execution as opposed to `@Rule`
