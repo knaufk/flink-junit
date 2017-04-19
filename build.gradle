@@ -15,19 +15,24 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'findbugs'
-
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+
+ext.flinkVersion="1.2.0"
 
 repositories {
     mavenCentral()
 }
 
+def scalaBinaryVersion = hasProperty("scalaBinaryVersion") ? scalaBinaryVersion : "$System.env.SCALA_BINARY_VERSION"
+
+
 dependencies {
     compile 'junit:junit:4.12'
-    compile 'org.apache.flink:flink-test-utils_2.11:1.2.0'
-    compile 'org.apache.flink:flink-runtime-web_2.11:1.2.0'
+    compile "org.apache.flink:flink-test-utils_$scalaBinaryVersion:$flinkVersion"
+    compile "org.apache.flink:flink-runtime-web_$scalaBinaryVersion:$flinkVersion"
 
     testCompile 'org.assertj:assertj-core:3.6.2'
 }
@@ -46,5 +51,16 @@ tasks.withType(FindBugs) {
     reports {
         xml.enabled true
         html.enabled false
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+
+            artifactId "flink-junit_$scalaBinaryVersion"
+
+            from components.java
+        }
     }
 }
