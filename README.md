@@ -6,10 +6,9 @@ This is a small, easy-to-use, but flexible JUnit Rule, which spins up and tears 
 
 It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be used for the `DataSet API` as well as `DataStream API`. 
 
-### Build 
+### Verify 
 
-1. `gradle wrapper --gradle-version 3.1`
-2. `./gradlew build`
+`./gradlew check`
 
 ### Compatability
 

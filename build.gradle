@@ -15,7 +15,8 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'findbugs'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -27,7 +28,6 @@ repositories {
 }
 
 def scalaBinaryVersion = hasProperty("scalaBinaryVersion") ? scalaBinaryVersion : "$System.env.SCALA_BINARY_VERSION"
-
 
 dependencies {
     compile 'junit:junit:4.12'
@@ -54,13 +54,68 @@ tasks.withType(FindBugs) {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
 
-            artifactId "flink-junit_$scalaBinaryVersion"
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
 
-            from components.java
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Flink-JUnit'
+                packaging 'jar'
+                artifactId "flink-junit_$scalaBinaryVersion"
+                description 'This is a small, easy-to-use, yet flexible JUnit Rule, which spins up and tears down an Apache Flink cluster for integration tests. '
+                url 'https://github.com/knaufk/flink-junit'
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                scm {
+                    connection 'scm:git:git://github.com/knaufk/flink-junit.git'
+                    developerConnection 'scm:git:git://github.com/knaufk/flink-junit.git'
+                    url 'https://github.com/knaufk/flink-junit/tree/master'
+                }
+
+                developers {
+                    developer {
+                        id 'knaufk'
+                        name 'Konstantin Knauf'
+                        email 'knauf.konstantin@gmail.com'
+                    }
+                }
+            }
         }
     }
 }
