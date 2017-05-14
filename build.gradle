@@ -21,7 +21,7 @@ apply plugin: 'signing'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-ext.flinkVersion="1.2.0"
+ext.flinkVersion="1.2.1"
 
 repositories {
     mavenCentral()

@@ -14,7 +14,7 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 | Version |  Flink Version | Java Version |
 | --------------- | ------------- | ------------ |
-| 1.0-SNAPSHOT    | 1.2.0         | 1.7          |
+| 1.0-SNAPSHOT    | 1.2.1         | 1.7          |
 
 
 ### Usage
