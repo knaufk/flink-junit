@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/knaufk/flink-junit.svg?branch=master)](https://travis-ci.org/knaufk/flink-junit)
-
 ## JUnit Rule for Apache Flink
 
 This is a small, easy-to-use, but flexible JUnit Rule, which spins up and tears down an Apache Flink cluster for integration tests. 
@@ -15,6 +14,27 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 | Version |  Flink Version | Java Version |
 | --------------- | ------------- | ------------ |
 | 1.0-SNAPSHOT    | 1.2.1         | 1.7          |
+
+### Dependencies
+
+Snapshot Version are available in Sonatype Snapshot Repository. Release Versions will be available on Maven Central.
+
+##### Gradle Example
+
+```groovy
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
+
+dependencies {
+    testCompile 'com.github.knaufk:flink-junit_2.10:1.0-SNAPSHOT'
+    // or testCompile 'com.github.knaufk:flink-junit_2.11:1.0-SNAPSHOT'
+    testCompile 'junit:junit:4.11'
+}
+```
 
 
 ### Usage
