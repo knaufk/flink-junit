@@ -1,5 +1,5 @@
 group 'com.github.knaufk'
-version '0.1'
+version '0.1.1-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -35,6 +35,7 @@ dependencies {
     compile "org.apache.flink:flink-runtime-web_$scalaBinaryVersion:$flinkVersion"
 
     testCompile 'org.assertj:assertj-core:3.6.2'
+    testCompile 'org.awaitility:awaitility:3.0.0'
 }
 
 spotless {
