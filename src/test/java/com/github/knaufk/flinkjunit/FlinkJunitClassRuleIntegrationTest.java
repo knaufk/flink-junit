@@ -37,7 +37,7 @@ public class FlinkJunitClassRuleIntegrationTest {
   public void testFlinkUiNotReachable() throws IOException {
 
     thrown.expect(ConnectException.class);
-    TestUtils.callWebUiOverview(flinkRule.getFlinkUiPort());
+    TestUtils.getOverviewJsonFromWebUi(flinkRule.getFlinkUiPort());
   }
 
   @Test

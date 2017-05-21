@@ -4,12 +4,15 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.awaitility.core.ThrowingRunnable;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class FlinkJUnitRuleBuilderIntegrationTest {
 
@@ -23,11 +26,18 @@ public class FlinkJUnitRuleBuilderIntegrationTest {
           .build();
 
   @Test
-  public void testFlinkUiReachable() throws IOException {
+  public void testFlinkUiIsReachable() throws IOException {
 
-    String overview = TestUtils.callWebUiOverview(flinkRule.getFlinkUiPort());
-
-    assertThat(overview).contains("\"taskmanagers\":1,\"slots-total\":4");
+    await()
+        .atMost(1, SECONDS)
+        .untilAsserted(
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                assertThat(TestUtils.getOverviewJsonFromWebUi(flinkRule.getFlinkUiPort()))
+                    .contains("\"taskmanagers\":1,\"slots-total\":4");
+              }
+            });
   }
 
   @Test

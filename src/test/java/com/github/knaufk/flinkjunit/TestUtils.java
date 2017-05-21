@@ -7,7 +7,7 @@ import java.net.URL;
 
 public class TestUtils {
 
-  static String callWebUiOverview(final int port) throws IOException {
+  static String getOverviewJsonFromWebUi(final int port) throws IOException {
     URL url = new URL("http://localhost:" + port + "/overview");
 
     StringBuilder sb = new StringBuilder();
