@@ -17,6 +17,8 @@ apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'findbugs'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: "jacoco"
+
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -54,6 +56,15 @@ tasks.withType(FindBugs) {
         html.enabled false
     }
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
+
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
