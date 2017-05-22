@@ -19,7 +19,8 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 ### Dependencies
 
-Snapshot Version are available in Sonatype Snapshot Repository. Release Versions will be available on Maven Central.
+Release versions are available on Maven Central. Snapshot versions are available in Sonatype OSS Snapshot Repository. 
+
 
 ##### Gradle Example
 
@@ -32,8 +33,8 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.github.knaufk:flink-junit_2.10:1.0-SNAPSHOT'
-    // or testCompile 'com.github.knaufk:flink-junit_2.11:1.0-SNAPSHOT'
+    testCompile 'com.github.knaufk:flink-junit_2.10:0.1'
+    // or testCompile 'com.github.knaufk:flink-junit_2.11:1:0.1'
     testCompile 'junit:junit:4.11'
 }
 ```
