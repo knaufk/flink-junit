@@ -8,6 +8,8 @@ import org.apache.curator.test.TestingServer;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.HighAvailabilityOptions;
+import org.apache.flink.configuration.JobManagerOptions;
+import org.apache.flink.runtime.jobmanager.JobManager;
 import org.apache.flink.runtime.messages.TaskManagerMessages;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.knaufk.flinkjunit.FlinkJUnitRuleBuilder.AVAILABLE_PORT;
 import static org.apache.flink.configuration.ConfigConstants.HA_ZOOKEEPER_QUORUM_KEY;
 
 public class FlinkJUnitRule extends ExternalResource {
@@ -36,6 +39,7 @@ public class FlinkJUnitRule extends ExternalResource {
   private static final Logger LOG = LoggerFactory.getLogger(FlinkJUnitRule.class);
 
   private static final int DEFAULT_PARALLELISM = 4;
+  public static final boolean DEFAULT_OBJECT_REUSE = false;
 
   private Configuration configuration;
   private LocalFlinkMiniCluster miniCluster;
@@ -58,7 +62,7 @@ public class FlinkJUnitRule extends ExternalResource {
    * @return the port or -1 if the Flink UI is not running.
    */
   public int getFlinkUiPort() {
-    return configuration.getInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, -1);
+    return webUiEnabled() ? configuration.getInteger(JobManagerOptions.WEB_PORT) : -1;
   }
 
   @Override
@@ -90,8 +94,8 @@ public class FlinkJUnitRule extends ExternalResource {
   }
 
   private void setPortForWebUiAndUpdateConfig() {
-    if (configuration.getInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, -1) == 0) {
-      configuration.setInteger(ConfigConstants.JOB_MANAGER_WEB_PORT_KEY, availablePort());
+    if (configuration.getInteger(JobManagerOptions.WEB_PORT) == AVAILABLE_PORT) {
+      configuration.setInteger(JobManagerOptions.WEB_PORT, availablePort());
     }
   }
 
@@ -103,7 +107,9 @@ public class FlinkJUnitRule extends ExternalResource {
 
   private void setEnvContextToMiniCluster(final LocalFlinkMiniCluster miniCluster) {
     TestStreamEnvironment.setAsContext(miniCluster, DEFAULT_PARALLELISM);
-    TestEnvironment testEnvironment = new TestEnvironment(miniCluster, DEFAULT_PARALLELISM);
+
+    TestEnvironment testEnvironment =
+        new TestEnvironment(miniCluster, DEFAULT_PARALLELISM, DEFAULT_OBJECT_REUSE);
     testEnvironment.setAsContext();
   }
 

@@ -4,6 +4,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.ClassRule;
@@ -14,6 +15,8 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 import java.net.ConnectException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FlinkJunitClassRuleIntegrationTest {
 
   private static Configuration config = new Configuration();
@@ -23,7 +26,7 @@ public class FlinkJunitClassRuleIntegrationTest {
     config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, 4);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, false);
 
-    config.setLong(ConfigConstants.TASK_MANAGER_MEMORY_SIZE_KEY, 80);
+    config.setInteger(TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, 80);
     config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
     config.setString(ConfigConstants.AKKA_ASK_TIMEOUT, "10 s");
     config.setString(ConfigConstants.AKKA_STARTUP_TIMEOUT, "60 s");
@@ -38,6 +41,11 @@ public class FlinkJunitClassRuleIntegrationTest {
 
     thrown.expect(ConnectException.class);
     TestUtils.getOverviewJsonFromWebUi(flinkRule.getFlinkUiPort());
+  }
+
+  @Test
+  public void whenFlinkUiIsNotReachbleWebPortIsNotReturned() throws IOException {
+    assertThat(flinkRule.getFlinkUiPort()).isEqualTo(-1);
   }
 
   @Test
