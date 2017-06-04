@@ -44,7 +44,7 @@ public class FlinkJunitClassRuleIntegrationTest {
   }
 
   @Test
-  public void whenFlinkUiIsNotReachbleWebPortIsNotReturned() throws IOException {
+  public void whenFlinkUiIsNoWebPortIsNotReturned() throws IOException {
     assertThat(flinkRule.getFlinkUiPort()).isEqualTo(-1);
   }
 

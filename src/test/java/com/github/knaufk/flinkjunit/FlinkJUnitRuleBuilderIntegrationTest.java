@@ -13,22 +13,20 @@ import java.io.IOException;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.given;
 
 public class FlinkJUnitRuleBuilderIntegrationTest {
 
   @ClassRule
   public static final FlinkJUnitRule flinkRule =
-      new FlinkJUnitRuleBuilder()
-          .withTaskmanagers(1)
-          .withTaskSlots(4)
-          .withWebUiEnabled()
-          .withJobManagerHA()
-          .build();
+      new FlinkJUnitRuleBuilder().withTaskmanagers(1).withTaskSlots(4).withWebUiEnabled().build();
 
   @Test
   public void testFlinkUiIsReachable() throws IOException {
 
-    await()
+    given()
+        .ignoreExceptions()
+        .await()
         .atMost(1, SECONDS)
         .untilAsserted(
             new ThrowingRunnable() {

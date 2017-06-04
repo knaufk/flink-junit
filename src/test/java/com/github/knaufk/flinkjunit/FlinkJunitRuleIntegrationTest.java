@@ -13,6 +13,7 @@ import java.io.IOException;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.given;
 
 public class FlinkJunitRuleIntegrationTest {
 
@@ -27,7 +28,9 @@ public class FlinkJunitRuleIntegrationTest {
   @Test
   public void testFlinkUiReachableUnderSpecifiedPort() throws IOException {
 
-    await()
+    given()
+        .ignoreExceptions()
+        .await()
         .atMost(1, SECONDS)
         .untilAsserted(
             new ThrowingRunnable() {
