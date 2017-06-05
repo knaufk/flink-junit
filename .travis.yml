@@ -4,3 +4,4 @@ jdk:
 env:
   - SCALA_BINARY_VERSION=2.10
   - SCALA_BINARY_VERSION=2.11
+script: ./gradlew check --debug
