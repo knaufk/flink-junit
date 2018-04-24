@@ -8,8 +8,7 @@ import org.apache.curator.test.TestingServer;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.HighAvailabilityOptions;
-import org.apache.flink.configuration.JobManagerOptions;
-import org.apache.flink.runtime.jobmanager.JobManager;
+import org.apache.flink.configuration.WebOptions;
 import org.apache.flink.runtime.messages.TaskManagerMessages;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
@@ -62,7 +61,7 @@ public class FlinkJUnitRule extends ExternalResource {
    * @return the port or -1 if the Flink UI is not running.
    */
   public int getFlinkUiPort() {
-    return webUiEnabled() ? configuration.getInteger(JobManagerOptions.WEB_PORT) : -1;
+    return webUiEnabled() ? configuration.getInteger(WebOptions.PORT) : -1;
   }
 
   @Override
@@ -94,8 +93,8 @@ public class FlinkJUnitRule extends ExternalResource {
   }
 
   private void setPortForWebUiAndUpdateConfig() {
-    if (configuration.getInteger(JobManagerOptions.WEB_PORT) == AVAILABLE_PORT) {
-      configuration.setInteger(JobManagerOptions.WEB_PORT, availablePort());
+    if (configuration.getInteger(WebOptions.PORT) == AVAILABLE_PORT) {
+      configuration.setInteger(WebOptions.PORT, availablePort());
     }
   }
 
@@ -180,6 +179,7 @@ public class FlinkJUnitRule extends ExternalResource {
       }
 
       executor.stop();
+
       FileSystem.closeAll();
 
       Assert.assertEquals("Not all broadcast variables were released.", 0, numUnreleasedBCVars);
