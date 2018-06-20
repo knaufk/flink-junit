@@ -1,12 +1,6 @@
 package com.github.knaufk.flinkjunit;
 
-import org.apache.flink.configuration.AkkaOptions;
-import org.apache.flink.configuration.ConfigConstants;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.configuration.HighAvailabilityOptions;
-import org.apache.flink.configuration.JobManagerOptions;
-import org.apache.flink.configuration.TaskManagerOptions;
-import org.apache.flink.configuration.WebOptions;
+import org.apache.flink.configuration.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
