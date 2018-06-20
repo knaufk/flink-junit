@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/knaufk/flink-junit.svg?branch=master)](https://travis-ci.org/knaufk/flink-junit) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.knaufk/flink-junit_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser)
+[![Build Status](https://travis-ci.org/knaufk/flink-junit.svg?branch=master)](https://travis-ci.org/knaufk/flink-junit) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.knaufk/flink-junit_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.knaufk/flink-junit_2.11)
 
 
 ## JUnit Rule for Apache Flink
