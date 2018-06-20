@@ -13,8 +13,11 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 ### Compatability
 
+**This JUnit-Rule will not longer be ported to future Flink versions. Please use Flink's own MiniClusterResource from Flink 1.5 on.**
+
 | Version |  Flink Version | Java Version |
 | --------------- | ------------- | ------------ |
+| 0.3    | 1.4.0  | 1.7 |
 | 0.2    | 1.3.0  | 1.7 |
 | 0.1    | 1.2.1  | 1.7 |
 
@@ -35,8 +38,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.github.knaufk:flink-junit_2.10:0.2'
-    // or testCompile 'com.github.knaufk:flink-junit_2.11:0.2'
+    testCompile 'com.github.knaufk:flink-junit_2.11:0.3'
     testCompile 'junit:junit:4.11'
 }
 ```
