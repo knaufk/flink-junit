@@ -2,9 +2,7 @@ package com.github.knaufk.flinkjunit;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
-import org.apache.flink.configuration.ConfigConstants;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.configuration.TaskManagerOptions;
+import org.apache.flink.configuration.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.ClassRule;
@@ -23,13 +21,13 @@ public class FlinkJunitClassRuleIntegrationTest {
 
   static {
     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, 1);
-    config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, 4);
+    config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, 4);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, false);
 
     config.setInteger(TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, 80);
-    config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
-    config.setString(ConfigConstants.AKKA_ASK_TIMEOUT, "10 s");
-    config.setString(ConfigConstants.AKKA_STARTUP_TIMEOUT, "60 s");
+    config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
+    config.setString(AkkaOptions.ASK_TIMEOUT, "10 s");
+    config.setString(AkkaOptions.STARTUP_TIMEOUT, "60 s");
   }
 
   @ClassRule public static final FlinkJUnitRule flinkRule = new FlinkJUnitRule(config);
