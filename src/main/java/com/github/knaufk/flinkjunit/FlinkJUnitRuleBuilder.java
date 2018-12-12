@@ -11,7 +11,7 @@ public final class FlinkJUnitRuleBuilder {
   public static final int DEFAULT_NUMBER_OF_TASK_SLOTS = 4;
   public static final int DEFAULT_NUMBER_OF_TASKMANAGERS = 1;
 
-  public static final int DEFAULT_TASK_MANAGER_MEMORY_SIZE = 80;
+  public static final String DEFAULT_TASK_MANAGER_MEMORY_SIZE = "80 m";
   public static final long DEFAULT_AKKA_ASK_TIMEOUT = 1000;
   public static final String DEFAULT_AKKA_STARTUP_TIMEOUT = "60 s";
 
@@ -76,13 +76,13 @@ public final class FlinkJUnitRuleBuilder {
     Configuration config = new Configuration();
 
     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
-    config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, noOfTaskSlots);
+    config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(RestOptions.REST_PORT, webUiPort);
+    config.setInteger(RestOptions.PORT, webUiPort);
 
-    config.setInteger(
+    config.setString(
         TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
-    config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
+    config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
     config.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
     config.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
 
