@@ -78,7 +78,7 @@ public final class FlinkJUnitRuleBuilder {
     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
     config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, noOfTaskSlots);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(RestOptions.PORT, webUiPort);
+    config.setInteger(RestOptions.REST_PORT, webUiPort);
 
     config.setInteger(
         TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
