@@ -76,13 +76,13 @@ public final class FlinkJUnitRuleBuilder {
     Configuration config = new Configuration();
 
     config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
-    config.setInteger(ConfigConstants.TASK_MANAGER_NUM_TASK_SLOTS, noOfTaskSlots);
+    config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(WebOptions.PORT, webUiPort);
+    config.setInteger(RestOptions.PORT, webUiPort);
 
     config.setInteger(
         TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
-    config.setBoolean(ConfigConstants.FILESYSTEM_DEFAULT_OVERWRITE_KEY, true);
+    config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
     config.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
     config.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
 

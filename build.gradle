@@ -1,5 +1,5 @@
 group 'com.github.knaufk'
-version '0.3'
+version '0.4'
 
 buildscript {
     repositories {
@@ -23,7 +23,7 @@ apply plugin: "jacoco"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-ext.flinkVersion="1.4.0"
+ext.flinkVersion="1.5.0"
 
 repositories {
     mavenCentral()
