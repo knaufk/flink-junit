@@ -73,25 +73,25 @@ public final class FlinkJUnitRuleBuilder {
 
   private Configuration buildConfiguration() {
 
-    Configuration config = new Configuration();
+    Configuration flinkConfig = new Configuration();
 
-    config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
-    config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
-    config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(RestOptions.PORT, webUiPort);
+    flinkConfig.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
+    flinkConfig.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
+    flinkConfig.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
+    flinkConfig.setInteger(RestOptions.PORT, webUiPort);
 
-    config.setInteger(
+    flinkConfig.setInteger(
         TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY_MB, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
-    config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
-    config.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
-    config.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
+    flinkConfig.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
+    flinkConfig.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
+    flinkConfig.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
 
     if (zookeeperHa) {
-      config.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
-      config.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
-      config.setString(HighAvailabilityOptions.HA_STORAGE_PATH, "/tmp/flink");
+      flinkConfig.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
+      flinkConfig.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
+      flinkConfig.setString(HighAvailabilityOptions.HA_STORAGE_PATH, "/tmp/flink");
     }
 
-    return config;
+    return flinkConfig;
   }
 }
