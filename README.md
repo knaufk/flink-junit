@@ -15,6 +15,7 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 | Version |  Flink Version | Java Version |
 | --------------- | ------------- | ------------ |
+| 0.5    | 1.6.3  | 1.8 |
 | 0.4    | 1.5.0  | 1.7 |
 | 0.3    | 1.4.0  | 1.7 |
 | 0.2    | 1.3.0  | 1.7 |
@@ -37,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.github.knaufk:flink-junit_2.11:0.3'
+    testCompile 'com.github.knaufk:flink-junit_2.11:0.5'
     testCompile 'junit:junit:4.11'
 }
 ```
