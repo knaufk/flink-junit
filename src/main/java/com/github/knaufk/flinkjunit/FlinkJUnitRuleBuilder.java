@@ -11,7 +11,7 @@ public final class FlinkJUnitRuleBuilder {
   public static final int DEFAULT_NUMBER_OF_TASK_SLOTS = 4;
   public static final int DEFAULT_NUMBER_OF_TASKMANAGERS = 1;
 
-  public static final int DEFAULT_TASK_MANAGER_MEMORY_SIZE = 80;
+  public static final String DEFAULT_TASK_MANAGER_MEMORY_SIZE = "80m";
   public static final long DEFAULT_AKKA_ASK_TIMEOUT = 1000;
   public static final String DEFAULT_AKKA_STARTUP_TIMEOUT = "60 s";
 
@@ -78,10 +78,10 @@ public final class FlinkJUnitRuleBuilder {
     flinkConfig.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
     flinkConfig.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
     flinkConfig.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    flinkConfig.setInteger(RestOptions.PORT, webUiPort);
+    flinkConfig.setInteger(WebOptions.PORT, webUiPort);
 
-    flinkConfig.setInteger(
-        TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY_MB, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
+    flinkConfig.setString(
+        TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
     flinkConfig.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
     flinkConfig.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
     flinkConfig.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);

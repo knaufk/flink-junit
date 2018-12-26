@@ -24,7 +24,7 @@ public class FlinkJunitClassRuleIntegrationTest {
     config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, 4);
     config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, false);
 
-    config.setInteger(TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY_MB, 80);
+    config.setString(TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, "80m");
     config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
     config.setString(AkkaOptions.ASK_TIMEOUT, "10 s");
     config.setString(AkkaOptions.STARTUP_TIMEOUT, "60 s");

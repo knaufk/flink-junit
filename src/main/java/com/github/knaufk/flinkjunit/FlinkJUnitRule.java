@@ -15,7 +15,6 @@ import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.knaufk.flinkjunit.FlinkJUnitRuleBuilder.AVAILABLE_PORT;
-import static org.apache.flink.configuration.ConfigConstants.HA_ZOOKEEPER_QUORUM_KEY;
 
 public class FlinkJUnitRule extends MiniClusterResource {
 
@@ -85,7 +84,7 @@ public class FlinkJUnitRule extends MiniClusterResource {
       localZk = new TestingServer();
       int zkPort = localZk.getPort();
       localZk.start();
-      configuration.setString(HA_ZOOKEEPER_QUORUM_KEY, "localhost:" + zkPort);
+      configuration.setString(HighAvailabilityOptions.HA_ZOOKEEPER_QUORUM, "localhost:" + zkPort);
       LOG.debug("Zookeeper started on port {}", zkPort);
     } catch (Exception e) {
       throw new FlinkJUnitException("Exception while starting local Zookeeper server.", e);
