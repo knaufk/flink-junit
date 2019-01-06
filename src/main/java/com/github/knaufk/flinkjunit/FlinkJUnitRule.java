@@ -15,6 +15,7 @@ import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.knaufk.flinkjunit.FlinkJUnitRuleBuilder.AVAILABLE_PORT;
+import static com.github.knaufk.flinkjunit.FlinkJUnitRuleBuilder.DEFAULT_SHUTDOWN_TIMEOUT;
 
 public class FlinkJUnitRule extends MiniClusterResource {
 
@@ -23,8 +24,12 @@ public class FlinkJUnitRule extends MiniClusterResource {
   private Configuration configuration;
   private TestingServer localZk;
 
+  public FlinkJUnitRule(Configuration config, Time shutdownTimeout) {
+    this(getMiniClusterResourceConfigurationFrom(config, shutdownTimeout));
+  }
+
   public FlinkJUnitRule(Configuration config) {
-    this(getMiniClusterResourceConfigurationFrom(config));
+    this(getMiniClusterResourceConfigurationFrom(config, DEFAULT_SHUTDOWN_TIMEOUT));
   }
 
   /**
@@ -122,7 +127,7 @@ public class FlinkJUnitRule extends MiniClusterResource {
   }
 
   private static MiniClusterResourceConfiguration getMiniClusterResourceConfigurationFrom(
-      Configuration flinkConfig) {
+      Configuration flinkConfig, Time shutdownTimeout) {
     int numberOfTaskManagers = flinkConfig.getInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, 0);
     int numberOfTaskSlots = flinkConfig.getInteger(TaskManagerOptions.NUM_TASK_SLOTS, 0);
 
@@ -130,7 +135,7 @@ public class FlinkJUnitRule extends MiniClusterResource {
         .setConfiguration(flinkConfig)
         .setNumberTaskManagers(numberOfTaskManagers)
         .setNumberSlotsPerTaskManager(numberOfTaskSlots)
-        .setShutdownTimeout(Time.of(1, TimeUnit.SECONDS))
+        .setShutdownTimeout(shutdownTimeout)
         .setCodebaseType(TestBaseUtils.CodebaseType.LEGACY)
         .setRpcServiceSharing(RpcServiceSharing.SHARED)
         .build();

@@ -1,5 +1,6 @@
 package com.github.knaufk.flinkjunit;
 
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.configuration.*;
@@ -12,6 +13,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +32,9 @@ public class FlinkJunitClassRuleIntegrationTest {
     config.setString(AkkaOptions.STARTUP_TIMEOUT, "60 s");
   }
 
-  @ClassRule public static final FlinkJUnitRule flinkRule = new FlinkJUnitRule(config);
+  @ClassRule
+  public static final FlinkJUnitRule flinkRule =
+      new FlinkJUnitRule(config, Time.of(2, TimeUnit.SECONDS));
 
   @Rule public ExpectedException thrown = ExpectedException.none();
 
