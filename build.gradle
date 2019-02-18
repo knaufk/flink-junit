@@ -24,6 +24,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext.flinkVersion="1.6.3"
+ext.log4jVersion="2.10.0"
 
 repositories {
     mavenCentral()
@@ -36,6 +37,11 @@ dependencies {
     compile "org.apache.flink:flink-test-utils_$scalaBinaryVersion:$flinkVersion"
     compile "org.apache.flink:flink-runtime-web_$scalaBinaryVersion:$flinkVersion"
     compile "org.apache.flink:flink-shaded-hadoop2:$flinkVersion"
+
+    testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    testCompile "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    testCompile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    testCompile "org.apache.logging.log4j:log4j-jcl:$log4jVersion"
 
     testCompile 'org.assertj:assertj-core:3.6.2'
     testCompile 'org.awaitility:awaitility:3.0.0'
