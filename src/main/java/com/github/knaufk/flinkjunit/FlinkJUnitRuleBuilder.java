@@ -1,8 +1,11 @@
 package com.github.knaufk.flinkjunit;
 
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public final class FlinkJUnitRuleBuilder {
 
@@ -11,9 +14,11 @@ public final class FlinkJUnitRuleBuilder {
   public static final int DEFAULT_NUMBER_OF_TASK_SLOTS = 4;
   public static final int DEFAULT_NUMBER_OF_TASKMANAGERS = 1;
 
-  public static final int DEFAULT_TASK_MANAGER_MEMORY_SIZE = 80;
+  public static final String DEFAULT_TASK_MANAGER_MEMORY_SIZE = "80m";
   public static final long DEFAULT_AKKA_ASK_TIMEOUT = 1000;
   public static final String DEFAULT_AKKA_STARTUP_TIMEOUT = "60 s";
+
+  public static final Time DEFAULT_SHUTDOWN_TIMEOUT = Time.of(1, TimeUnit.SECONDS);
 
   public static final int AVAILABLE_PORT = 0;
 
@@ -23,6 +28,8 @@ public final class FlinkJUnitRuleBuilder {
   private int webUiPort = AVAILABLE_PORT;
   private boolean webUiEnabled = false;
   private boolean zookeeperHa = false;
+
+  private Time shutdownTimeout = DEFAULT_SHUTDOWN_TIMEOUT;
 
   /**
    * Enables Flink WebUI and binds it to a random port available.
@@ -67,31 +74,36 @@ public final class FlinkJUnitRuleBuilder {
     return this;
   }
 
+  public FlinkJUnitRuleBuilder withShutdownTimeout(Time shutdownTimeout) {
+    this.shutdownTimeout = shutdownTimeout;
+    return this;
+  }
+
   public FlinkJUnitRule build() {
-    return new FlinkJUnitRule(buildConfiguration());
+    return new FlinkJUnitRule(buildConfiguration(), shutdownTimeout);
   }
 
   private Configuration buildConfiguration() {
 
-    Configuration config = new Configuration();
+    Configuration flinkConfig = new Configuration();
 
-    config.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
-    config.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
-    config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
-    config.setInteger(RestOptions.PORT, webUiPort);
+    flinkConfig.setInteger(ConfigConstants.LOCAL_NUMBER_TASK_MANAGER, noOfTaskmanagers);
+    flinkConfig.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, noOfTaskSlots);
+    flinkConfig.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, webUiEnabled);
+    flinkConfig.setInteger(WebOptions.PORT, webUiPort);
 
-    config.setInteger(
+    flinkConfig.setString(
         TaskManagerOptions.TASK_MANAGER_HEAP_MEMORY, DEFAULT_TASK_MANAGER_MEMORY_SIZE);
-    config.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
-    config.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
-    config.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
+    flinkConfig.setBoolean(CoreOptions.FILESYTEM_DEFAULT_OVERRIDE, true);
+    flinkConfig.setString(AkkaOptions.ASK_TIMEOUT, DEFAULT_AKKA_ASK_TIMEOUT + "s");
+    flinkConfig.setString(AkkaOptions.STARTUP_TIMEOUT, DEFAULT_AKKA_STARTUP_TIMEOUT);
 
     if (zookeeperHa) {
-      config.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
-      config.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
-      config.setString(HighAvailabilityOptions.HA_STORAGE_PATH, "/tmp/flink");
+      flinkConfig.setInteger(ConfigConstants.LOCAL_NUMBER_JOB_MANAGER, 3);
+      flinkConfig.setString(HighAvailabilityOptions.HA_MODE, "zookeeper");
+      flinkConfig.setString(HighAvailabilityOptions.HA_STORAGE_PATH, "/tmp/flink");
     }
 
-    return config;
+    return flinkConfig;
   }
 }

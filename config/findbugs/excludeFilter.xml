@@ -12,4 +12,10 @@
             <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
         </And>
     </Match>
+    <Match>
+        <Class name="com.github.knaufk.flinkjunit.FlinkJunitHAIntegrationTest" />
+        <And>
+            <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        </And>
+    </Match>
 </FindBugsFilter>

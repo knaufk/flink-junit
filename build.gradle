@@ -20,10 +20,10 @@ apply plugin: 'signing'
 apply plugin: "jacoco"
 
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-ext.flinkVersion="1.5.0"
+ext.flinkVersion="1.6.3"
 
 repositories {
     mavenCentral()
