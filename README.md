@@ -13,6 +13,8 @@ It builds upon Flink's `TestEnvironment` and `TestStreamEnvironment` and can be 
 
 ### Compatability
 
+**Warning:** This JUnit Rule will no longer be maintained or ported to future Flink versions. Please use https://github.com/apache/flink/blob/master/flink-runtime/src/test/java/org/apache/flink/runtime/testutils/MiniClusterResource.java instead.
+
 | Version |  Flink Version | Java Version |
 | --------------- | ------------- | ------------ |
 | 0.5    | 1.6.x  | 1.8 |
